@@ -1,0 +1,16 @@
+name: Build workflow
+description: "Build dotnet"
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+    - name: Display dotnet version
+      shell: bash
+      run: dotnet --version
+    - name: Build the project
+      shell: bash
+      run: |
+        dotnet build

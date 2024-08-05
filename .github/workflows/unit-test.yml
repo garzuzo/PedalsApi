@@ -1,0 +1,14 @@
+name: Unit Testing workflow
+on: [push]
+permissions: {}
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Build
+        uses: ./.github/actions/build
+      - name: Run tests
+        run: |
+          dotnet test
