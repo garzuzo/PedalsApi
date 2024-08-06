@@ -1,8 +1,11 @@
+using Microsoft.EntityFrameworkCore;
 using PedalsApi.Extensions;
+using PedalsApi.Infrastructure.EntityFramework.DbContexts;
 
 var builder = WebApplication.CreateBuilder(args);
 var allowSpecificOrigins = "pedals-ui";
 // Add services to the container.
+builder.Services.AddHealthChecks();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: allowSpecificOrigins, policy =>
@@ -15,6 +18,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddServices(builder.Configuration);
+builder.Configuration.AddEnvironmentVariables(prefix: "Pedals_");
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -32,4 +36,11 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapHealthChecks("/health");
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<PedalsContext>();
+    await dbContext.Database.MigrateAsync();
+}
 app.Run();
