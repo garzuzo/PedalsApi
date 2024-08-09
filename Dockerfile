@@ -1,4 +1,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+RUN apt-get update \
+    && apt-get install -y curl=7.88.1-10+deb12u6 --no-install-recommends\
+    && rm -rf /var/lib/apt/lists/*
 USER app
 WORKDIR /app
 EXPOSE 8080
@@ -24,5 +27,4 @@ COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "PedalsApi.dll"]
 
 #Health check configuration
-HEALTHCHECK --interval=50s --timeout=10s --start-period=30s --retries=3 \
-CMD curl -f http://localhost:8080/health || exit 1
+HEALTHCHECK CMD curl -f http://localhost:8080/health || exit
